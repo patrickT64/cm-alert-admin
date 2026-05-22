@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0f1e">
+  <title>CM Alert — Admin</title>
+  <link rel="manifest" href="/manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0a0f1e; --navy-mid: #111827; --navy-light: #1e2a3a;
+      --border: rgba(255,255,255,0.08); --border-hover: rgba(255,255,255,0.16);
+      --text-primary: #f0f4ff; --text-secondary: #8899bb; --text-muted: #445577;
+      --l1: #22c55e; --l1-bg: rgba(34,197,94,0.08); --l1-border: rgba(34,197,94,0.25);
+      --l2: #f59e0b; --l2-bg: rgba(245,158,11,0.08); --l2-border: rgba(245,158,11,0.25);
+      --l3: #ef4444; --l3-bg: rgba(239,68,68,0.08); --l3-border: rgba(239,68,68,0.25);
+    }
+    body { font-family: 'DM Mono', monospace; background: var(--navy); color: var(--text-primary); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .container { width: 100%; max-width: 480px; }
+    .card { background: var(--navy-mid); border: 1px solid var(--border); border-radius: 20px; padding: 48px 40px; text-align: center; }
+    .logo-mark { width: 56px; height: 56px; background: linear-gradient(135deg, #1e3a8a, #3b82f6); border-radius: 14px; margin: 0 auto 32px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: white; }
+    .login-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .login-sub { font-size: 12px; color: var(--text-secondary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 40px; }
+    input[type="password"] { width: 100%; padding: 14px 18px; background: var(--navy-light); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-family: 'DM Mono', monospace; font-size: 14px; letter-spacing: 0.15em; outline: none; margin-bottom: 16px; }
+    input[type="password"]::placeholder { color: var(--text-muted); }
+    .btn-primary { width: 100%; padding: 14px; background: #1d4ed8; border: none; border-radius: 10px; color: white; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; }
+    .btn-primary:hover { background: #1e40af; }
+    .login-error { margin-top: 14px; font-size: 12px; color: var(--l3); min-height: 18px; }
+    #admin-screen { display: none; }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-logo { width: 36px; height: 36px; background: linear-gradient(135deg, #1e3a8a, #3b82f6); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; color: white; }
+    .header-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+    .header-sub { font-size: 11px; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .btn-logout { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; color: var(--text-secondary); font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer; }
+    .btn-logout:hover { border-color: var(--border-hover); color: var(--text-primary); }
+    .section-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+    .levels { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+    .level-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 16px; background: var(--navy-mid); }
+    .level-card:hover { border-color: var(--border-hover); }
+    .level-card.selected-1 { border-color: var(--l1-border); background: var(--l1-bg); }
+    .level-card.selected-2 { border-color: var(--l2-border); background: var(--l2-bg); }
+    .level-card.selected-3 { border-color: var(--l3-border); background: var(--l3-bg); }
+    .level-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dot-1 { background: var(--l1); box-shadow: 0 0 8px var(--l1); }
+    .dot-2 { background: var(--l2); box-shadow: 0 0 8px var(--l2); }
+    .dot-3 { background: var(--l3); box-shadow: 0 0 8px var(--l3); animation: pulse-red 1.5s infinite; }
+    @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 8px var(--l3); } 50% { box-shadow: 0 0 16px var(--l3), 0 0 24px var(--l3); } }
+    .level-info { flex: 1; }
+    .level-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+    .level-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+    .level-badge { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 5px; font-weight: 500; }
+    .badge-1 { background: var(--l1-bg); color: var(--l1); border: 1px solid var(--l1-border); }
+    .badge-2 { background: var(--l2-bg); color: var(--l2); border: 1px solid var(--l2-border); }
+    .badge-3 { background: var(--l3-bg); color: var(--l3); border: 1px solid var(--l3-border); }
+    .preview-box { background: var(--navy-mid); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 28px; min-height: 80px; }
+    .preview-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+    .preview-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; font-style: italic; }
+    .preview-text.active { color: var(--text-primary); font-style: normal; }
+    .btn-send { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.2s; }
+    .btn-send:disabled { background: var(--navy-light); color: var(--text-muted); cursor: not-allowed; border: 1px solid var(--border); }
+    .btn-send.ready-1 { background: var(--l1); color: #052e16; }
+    .btn-send.ready-2 { background: var(--l2); color: #451a03; }
+    .btn-send.ready-3 { background: var(--l3); color: #fff; }
+    .status-bar { margin-top: 16px; padding: 12px 16px; border-radius: 10px; font-size: 12px; text-align: center; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    .status-bar.idle { background: transparent; color: transparent; }
+    .status-bar.sending { background: rgba(59,130,246,0.1); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
+    .status-bar.success { background: var(--l1-bg); color: var(--l1); border: 1px solid var(--l1-border); }
+    .status-bar.error { background: var(--l3-bg); color: var(--l3); border: 1px solid var(--l3-border); }
+    .history { margin-top: 28px; }
+    .history-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .history-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .history-text { flex: 1; color: var(--text-secondary); }
+    .history-time { color: var(--text-muted); font-size: 11px; }
+  </style>
+</head>
+<body>
+
+<div class="container" id="login-screen">
+  <div class="card">
+    <div class="logo-mark">CM</div>
+    <div class="login-title">CM Alert</div>
+    <div class="login-sub">Pannello Amministratore</div>
+    <input type="password" id="pwd-input" placeholder="Password di accesso" autocomplete="current-password">
+    <button class="btn-primary" onclick="doLogin()">Accedi</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<div class="container" id="admin-screen">
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo">CM</div>
+      <div>
+        <div class="header-title">CM Alert</div>
+        <div class="header-sub">TT&amp;A Advisors</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">Esci</button>
+  </div>
+
+  <div class="section-label">Seleziona livello di allerta</div>
+  <div class="levels">
+    <div class="level-card" id="card-1" onclick="selectLevel(1)">
+      <div class="level-dot dot-1"></div>
+      <div class="level-info">
+        <div class="level-name">Livello 1 — Monitoraggio</div>
+        <div class="level-desc">Situazione in osservazione · Aggiornamenti su Signal</div>
+      </div>
+      <div class="level-badge badge-1">Verde</div>
+    </div>
+    <div class="level-card" id="card-2" onclick="selectLevel(2)">
+      <div class="level-dot dot-2"></div>
+      <div class="level-info">
+        <div class="level-name">Livello 2 — Allerta</div>
+        <div class="level-desc">Codice Giallo · Riunione CdC convocata</div>
+      </div>
+      <div class="level-badge badge-2">Giallo</div>
+    </div>
+    <div class="level-card" id="card-3" onclick="selectLevel(3)">
+      <div class="level-dot dot-3"></div>
+      <div class="level-info">
+        <div class="level-name">Livello 3 — Emergenza</div>
+        <div class="level-desc">Codice Rosso · Attivazione immediata piano di crisi</div>
+      </div>
+      <div class="level-badge badge-3">Rosso</div>
+    </div>
+  </div>
+
+  <div class="preview-box">
+    <div class="preview-label">Anteprima messaggio</div>
+    <div class="preview-text" id="preview-text">Seleziona un livello per vedere il messaggio che verrà inviato.</div>
+  </div>
+
+  <button class="btn-send" id="btn-send" disabled onclick="confirmSend()">
+    Seleziona un livello
+  </button>
+
+  <div class="status-bar idle" id="status-bar"></div>
+  <div class="history" id="history-list"></div>
+</div>
+
+<script>
+  const PASSWORD = 'TT&AalertSystem#2026';
+
+  const levels = {
+    1: {
+      label: 'Livello 1 — Monitoraggio',
+      push_message: 'Situazione in monitoraggio. Seguire aggiornamenti su chat Signal.',
+      twiml_url: 'https://handler.twilio.com/twiml/EH3f69e539187c3634fde26afa72de28f7',
+      push_url: ''
+    },
+    2: {
+      label: 'Livello 2 — Allerta',
+      push_message: 'Codice Giallo. Riunione CdC convocata. Clicca sulla notifica per entrare in conference call.',
+      twiml_url: 'https://handler.twilio.com/twiml/EHf3cc2e94ef4ccc6525345efc766afcf3',
+      push_url: 'https://whereby.com/cmalert'
+    },
+    3: {
+      label: 'Livello 3 — Emergenza',
+      push_message: 'Attenzione Codice Rosso. Attivazione immediata. Clicca sulla notifica per entrare in conference call.',
+      twiml_url: 'https://handler.twilio.com/twiml/EH0c958723cc2162697beb395ec3a1560c',
+      push_url: 'https://whereby.com/cmalert'
+    }
+  };
+
+  let selectedLevel = null;
+  let alertHistory = [];
+
+  function doLogin() {
+    const val = document.getElementById('pwd-input').value;
+    if (val === PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-screen').style.display = 'block';
+    } else {
+      document.getElementById('login-error').textContent = 'Password errata. Riprova.';
+      document.getElementById('pwd-input').value = '';
+    }
+  }
+
+  function doLogout() {
+    selectedLevel = null;
+    document.getElementById('admin-screen').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'block';
+    document.getElementById('pwd-input').value = '';
+    resetUI();
+  }
+
+  function selectLevel(n) {
+    selectedLevel = n;
+    [1,2,3].forEach(i => {
+      document.getElementById('card-'+i).className = 'level-card' + (i===n ? ' selected-'+i : '');
+    });
+    document.getElementById('preview-text').textContent = levels[n].push_message;
+    document.getElementById('preview-text').className = 'preview-text active';
+    const btn = document.getElementById('btn-send');
+    btn.disabled = false;
+    btn.className = 'btn-send ready-'+n;
+    btn.textContent = 'Invia Alert — ' + levels[n].label;
+    setStatus('idle', '');
+  }
+
+  function confirmSend() {
+    if (!selectedLevel) return;
+    const lv = levels[selectedLevel];
+    const ok = confirm('Confermi invio allerta?\n\n' + lv.label + '\n\n"' + lv.push_message + '"');
+    if (ok) sendAlert();
+  }
+
+  async function sendAlert() {
+    const lv = levels[selectedLevel];
+    const btn = document.getElementById('btn-send');
+    btn.disabled = true;
+    btn.textContent = 'Invio in corso...';
+    setStatus('sending', 'Invio alert in corso...');
+
+    try {
+      await fetch('/.netlify/functions/send-alert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          livello: selectedLevel,
+          label: lv.label,
+          push_message: lv.push_message,
+          twiml_url: lv.twiml_url,
+          push_url: lv.push_url
+        })
+      });
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      addHistory(lv.label, timeStr, selectedLevel);
+      setStatus('success', 'Alert inviato — ' + timeStr);
+      resetUI();
+
+    } catch(e) {
+      setStatus('error', 'Errore di connessione. Riprova.');
+      btn.disabled = false;
+      btn.textContent = 'Riprova';
+    }
+  }
+
+  function setStatus(type, text) {
+    const el = document.getElementById('status-bar');
+    el.className = 'status-bar ' + type;
+    el.textContent = text;
+  }
+
+  function resetUI() {
+    selectedLevel = null;
+    [1,2,3].forEach(i => document.getElementById('card-'+i).className = 'level-card');
+    document.getElementById('preview-text').textContent = 'Seleziona un livello per vedere il messaggio che verrà inviato.';
+    document.getElementById('preview-text').className = 'preview-text';
+    const btn = document.getElementById('btn-send');
+    btn.disabled = true;
+    btn.className = 'btn-send';
+    btn.textContent = 'Seleziona un livello';
+  }
+
+  function addHistory(label, time, level) {
+    alertHistory.unshift({ label, time, level });
+    if (alertHistory.length > 5) alertHistory.pop();
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const colors = { 1: '#22c55e', 2: '#f59e0b', 3: '#ef4444' };
+    const el = document.getElementById('history-list');
+    if (alertHistory.length === 0) { el.innerHTML = ''; return; }
+    el.innerHTML = '<div class="section-label" style="margin-top:0">Ultimi alert inviati</div>' +
+      alertHistory.map(h => `<div class="history-item"><div class="history-dot" style="background:${colors[h.level]}"></div><div class="history-text">${h.label}</div><div class="history-time">${h.time}</div></div>`).join('');
+  }
+
+  document.getElementById('pwd-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+</script>
+</body>
+</html>

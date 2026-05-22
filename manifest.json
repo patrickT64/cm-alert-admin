@@ -1,0 +1,8 @@
+{
+  "name": "CM Alert Admin — TT&A Advisors",
+  "short_name": "CM Admin",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f1e",
+  "theme_color": "#0a0f1e"
+}
