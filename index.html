@@ -18,7 +18,8 @@
       --l3: #ef4444; --l3-bg: rgba(239,68,68,0.08); --l3-border: rgba(239,68,68,0.25);
     }
     body { font-family: 'DM Mono', monospace; background: var(--navy); color: var(--text-primary); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-    .container { width: 100%; max-width: 480px; }
+    body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at 20% 20%, rgba(30,58,138,0.15) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+    .container { width: 100%; max-width: 480px; position: relative; z-index: 1; }
     .card { background: var(--navy-mid); border: 1px solid var(--border); border-radius: 20px; padding: 48px 40px; text-align: center; }
     .logo-mark { width: 56px; height: 56px; background: linear-gradient(135deg, #1e3a8a, #3b82f6); border-radius: 14px; margin: 0 auto 32px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: white; }
     .login-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 6px; }
@@ -106,7 +107,7 @@
     <div class="level-card" id="card-1" onclick="selectLevel(1)">
       <div class="level-dot dot-1"></div>
       <div class="level-info">
-        <div class="level-name">Livello 1 — Monitoraggio</div>
+        <div class="level-name">Codice Verde — Monitoraggio</div>
         <div class="level-desc">Situazione in osservazione · Aggiornamenti su Signal</div>
       </div>
       <div class="level-badge badge-1">Verde</div>
@@ -114,16 +115,16 @@
     <div class="level-card" id="card-2" onclick="selectLevel(2)">
       <div class="level-dot dot-2"></div>
       <div class="level-info">
-        <div class="level-name">Livello 2 — Allerta</div>
-        <div class="level-desc">Codice Giallo · Riunione CdC convocata</div>
+        <div class="level-name">Codice Giallo — Allerta</div>
+        <div class="level-desc">Convocata Riunione CdC</div>
       </div>
       <div class="level-badge badge-2">Giallo</div>
     </div>
     <div class="level-card" id="card-3" onclick="selectLevel(3)">
       <div class="level-dot dot-3"></div>
       <div class="level-info">
-        <div class="level-name">Livello 3 — Emergenza</div>
-        <div class="level-desc">Codice Rosso · Attivazione immediata piano di crisi</div>
+        <div class="level-name">Codice Rosso — Crisi</div>
+        <div class="level-desc">Convocata Riunione CdC</div>
       </div>
       <div class="level-badge badge-3">Rosso</div>
     </div>
@@ -147,19 +148,19 @@
 
   const levels = {
     1: {
-      label: 'Livello 1 — Monitoraggio',
+      label: 'Codice Verde — Monitoraggio',
       push_message: 'Situazione in monitoraggio. Seguire aggiornamenti su chat Signal.',
       twiml_url: 'https://handler.twilio.com/twiml/EH3f69e539187c3634fde26afa72de28f7',
-push_url: null
+      push_url: null
     },
     2: {
-      label: 'Livello 2 — Allerta',
+      label: 'Codice Giallo — Allerta',
       push_message: 'Codice Giallo. Riunione CdC convocata. Clicca sulla notifica per entrare in conference call.',
       twiml_url: 'https://handler.twilio.com/twiml/EHf3cc2e94ef4ccc6525345efc766afcf3',
       push_url: 'https://whereby.com/cmalert'
     },
     3: {
-      label: 'Livello 3 — Emergenza',
+      label: 'Codice Rosso — Crisi',
       push_message: 'Attenzione Codice Rosso. Attivazione immediata. Clicca sulla notifica per entrare in conference call.',
       twiml_url: 'https://handler.twilio.com/twiml/EH0c958723cc2162697beb395ec3a1560c',
       push_url: 'https://whereby.com/cmalert'
